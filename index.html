@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تسجيل الدخول عبر Google</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #8A2BE2;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00000060;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: white;
+      color: #8A2BE2;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #8A2BE2;
+      color: white;
+      border: 1px solid white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>تسجيل الدخول عبر Google</h1>
+    <button onclick="signInWithGoogle()">تسجيل الدخول</button>
+    <p id="message" style="margin-top: 20px;"></p>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js"></script>
+
+  <script>
+    // إعدادات Firebase الخاصة بك
+    const firebaseConfig = {
+      apiKey: "AIzaSyDQFdXxuK8mJ-q2auW9Rhk_E20ytzQChoQ",
+      authDomain: "tghffgjf-cfd47.firebaseapp.com",
+      projectId: "tghffgjf-cfd47",
+      appId: "1:629825209330:web:9361b36955665d8864a16b",
+    };
+
+    // تهيئة Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // تسجيل الدخول باستخدام Google
+    function signInWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          const user = result.user;
+          document.getElementById('message').textContent = `مرحبًا، ${user.displayName}`;
+        })
+        .catch((error) => {
+          document.getElementById('message').textContent = 'حدث خطأ أثناء تسجيل الدخول: ' + error.message;
+        });
+    }
+  </script>
+</body>
+</html>
