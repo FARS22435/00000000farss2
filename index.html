@@ -1,58 +1,52 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل دخول عبر Google</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تسجيل الدخول أو إنشاء حساب</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     body {
+      background: linear-gradient(to right, #667eea, #764ba2);
       font-family: 'Arial', sans-serif;
-      background-color: #6a4c9c;
-      color: white;
-      text-align: center;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .btn-login {
-      padding: 15px 30px;
-      font-size: 1.2em;
-      background-color: #9c6dde;
-      color: white;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-login:hover {
-      background-color: #7e4d98;
-    }
-
-    footer {
-      margin-top: 30px;
-      font-size: 1em;
-      color: #d1a6ff;
     }
   </style>
 </head>
-<body>
-  <h1>تسجيل دخول عبر Google</h1>
-  <p>اضغط على الزر لتسجيل الدخول باستخدام حسابك على Google.</p>
+<body class="flex items-center justify-center min-h-screen">
 
-  <button class="btn-login" onclick="googleLogin()">تسجيل الدخول عبر Google</button>
+  <!-- تسجيل الدخول -->
+  <div id="loginSection" class="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-sm w-full hidden">
+    <h2 class="text-center text-2xl font-semibold mb-4">تسجيل الدخول</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="البريد الإلكتروني" required class="w-full p-2 mb-4 border rounded">
+      <input type="password" id="password" placeholder="كلمة السر" required class="w-full p-2 mb-4 border rounded">
+      <button class="bg-blue-600 text-white w-full p-2 rounded">تسجيل الدخول</button>
+      <p class="mt-4 text-center">ليس لديك حساب؟ <a href="#" onclick="showSignUp()" class="text-blue-500">إنشاء حساب</a></p>
+    </form>
+  </div>
 
-  <footer>
-    <p>حقوق الطبع والنشر &copy; 2025 جميع الحقوق محفوظة</p>
-  </footer>
+  <!-- إنشاء حساب -->
+  <div id="signupSection" class="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg max-w-sm w-full hidden">
+    <h2 class="text-center text-2xl font-semibold mb-4">إنشاء حساب</h2>
+    <form id="signupForm">
+      <input type="email" id="signupEmail" placeholder="البريد الإلكتروني" required class="w-full p-2 mb-4 border rounded">
+      <input type="password" id="signupPassword" placeholder="كلمة السر" required class="w-full p-2 mb-4 border rounded">
+      <button class="bg-green-600 text-white w-full p-2 rounded">إنشاء الحساب</button>
+      <p class="mt-4 text-center">لديك حساب؟ <a href="#" onclick="showLogin()" class="text-blue-500">تسجيل الدخول</a></p>
+    </form>
+  </div>
+
+  <!-- الصفحة العامة -->
+  <div id="generalPage" class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full hidden text-center">
+    <h2 class="text-2xl font-bold mb-2">أهلاً بك في الصفحة العامة</h2>
+    <p id="userEmailDisplay" class="mb-4 text-blue-600 font-semibold"></p>
+    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded">تسجيل الخروج</button>
+  </div>
 
   <script>
-    // إعداد Firebase
+    // ✅ إعدادات Firebase الخاصة بك
     const firebaseConfig = {
       apiKey: "AIzaSyDQFdXxuK8mJ-q2auW9Rhk_E20ytzQChoQ",
       authDomain: "tghffgjf-cfd47.firebaseapp.com",
@@ -60,28 +54,68 @@
       projectId: "tghffgjf-cfd47",
       storageBucket: "tghffgjf-cfd47.firebasestorage.app",
       messagingSenderId: "629825209330",
-      appId: "1:629825209330:web:173271b7e0956c8364a16b",
-      measurementId: "G-FSN60NS5W7"
+      appId: "1:629825209330:web:4b3a5f0b3bd0519b64a16b",
+      measurementId: "G-75CL3T0KJS"
     };
 
-    // تهيئة Firebase
-    const app = firebase.initializeApp(firebaseConfig);
+    // ✅ تهيئة Firebase
+    firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // دالة لتسجيل الدخول عبر Google
-    function googleLogin() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
-        .then((result) => {
-          const user = result.user;
-          console.log('User info: ', user);
-          alert(`مرحباً ${user.displayName}`);
-        })
-        .catch((error) => {
-          console.error("Error signing in: ", error);
-          alert("حدث خطأ أثناء تسجيل الدخول.");
-        });
+    // 🔄 عرض الصفحات
+    function showLogin() {
+      document.getElementById("loginSection").classList.remove("hidden");
+      document.getElementById("signupSection").classList.add("hidden");
+      document.getElementById("generalPage").classList.add("hidden");
     }
+
+    function showSignUp() {
+      document.getElementById("signupSection").classList.remove("hidden");
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("generalPage").classList.add("hidden");
+    }
+
+    function showGeneralPage(user) {
+      document.getElementById("userEmailDisplay").innerText = "البريد الإلكتروني: " + user.email;
+      document.getElementById("generalPage").classList.remove("hidden");
+      document.getElementById("signupSection").classList.add("hidden");
+      document.getElementById("loginSection").classList.add("hidden");
+    }
+
+    // 🎯 إنشاء حساب
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("تم إنشاء الحساب بنجاح! الرجاء تسجيل الدخول.");
+          showLogin();
+        })
+        .catch(error => alert(error.message));
+    });
+
+    // 🎯 تسجيل الدخول
+    document.getElementById("loginForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => showGeneralPage(userCredential.user))
+        .catch(error => alert(error.message));
+    });
+
+    // 🚪 تسجيل الخروج
+    function logout() {
+      auth.signOut().then(showLogin);
+    }
+
+    // ✅ التحقق من حالة المستخدم عند تشغيل الصفحة
+    auth.onAuthStateChanged(user => {
+      if (user) showGeneralPage(user);
+      else showLogin();
+    });
   </script>
+
 </body>
 </html>
